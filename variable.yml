@@ -1,0 +1,45 @@
+---
+- name: Deploy and start apache HTTPD service
+  hosts: dev
+  become: true
+  vars:
+          web_pkg: httpd
+          firewall_pkg: firewalld
+          web_service: httpd
+          firewall_service: firewalld
+          rule: http
+  tasks:
+          - name: required pkg are installed and up to date
+            yum:
+                    name:
+                            - "{{ web_pkg }}"
+                            - "{{ firewall_pkg }}"
+                    state: latest
+          - name: firewall_service is started and enabled
+            service:
+                    name: "{{ firewall_service }}"
+                    enabled: true
+                    state: started
+          - name: web_service is started and enabled
+            service:
+                    name: "{{ web_service }}"
+                    enabled: true
+                    state: started
+          - name: web contents copy
+            copy:
+                    content: "This is my second web page"
+                    dest: /var/www/html/index.html
+          - name: the firewall port for {{ rule }} is open
+            firewalld:
+                    service: "{{ rule }}"
+                    permanent: true
+                    immediate: true
+                    state: enabled
+- name: verify the apache service
+  hosts: localhost
+  become: false
+  tasks:
+          - name: ensure the webserver is reachable
+            uri:
+                    url: http://192.168.56.101/index.html
+                    status_code: 200

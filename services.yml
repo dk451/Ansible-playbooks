@@ -1,0 +1,9 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+          - name: start httpd service
+            service:
+                    name: httpd
+                    enabled: true
+                    state: started

@@ -1,0 +1,9 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+          - name: creating user
+            user:
+                    name: Nodi
+                    uid: 4003
+                    state: present

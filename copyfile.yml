@@ -1,0 +1,8 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+          - name: copy file into directory
+            copy:
+                    src: file1.txt
+                    dest: /var/www/html/

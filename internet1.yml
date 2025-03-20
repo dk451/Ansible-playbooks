@@ -1,0 +1,46 @@
+---
+- hosts: dev
+  become: yes
+  tasks:
+          - name: latest version of httpd and firewalld installed
+            yum:
+                    name:
+                            - httpd
+                            - firewalld
+                    state: latest
+
+          - name: write html page
+            copy:
+
+                    content: "Welcome to my services!\n"
+                    dest: /var/www/html/index.html
+
+          - name: firewalld enable and running
+            service:
+
+                    name: firewalld
+                    enabled: true
+                    state: started
+
+          - name: httpd enabled and running
+            service:
+
+                    name: httpd
+                    enabled: true
+                    state: started
+
+          - name: firewall clearance
+            firewalld:
+                    service: http
+                    permanent: yes
+                    state: enabled
+                    immediate: true
+
+- hosts: localhost
+  become: no
+  tasks:
+          - name: connect to web server
+            uri:
+                    url: http://192.168.56.101/index.html
+                    return_content: yes
+                    status_code: 200
